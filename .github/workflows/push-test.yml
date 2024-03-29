@@ -4,6 +4,9 @@ on:
   push:
     branches:    
       - '**'
+  workflow_dispatch:
+    branches:
+      - '*'
 
 env:
   CARGO_TERM_COLOR: always
@@ -11,7 +14,7 @@ jobs:
   rust_tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable

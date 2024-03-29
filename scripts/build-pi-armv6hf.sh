@@ -6,21 +6,21 @@
 
 set -eux
 # Get alsa lib and headers
-HIDAPI_VER="0.8.0~rc1+git20140818.d17db57+dfsg-2"
-LIBUSB_VER="1.0.22-2"
-LIBUDEV_VER="241-7~deb10u8+rpi1"
-LIBC_VER="2.28-10+rpi1+deb10u2"
-OPENSSL_VER="1.1.1n-0+deb11u3"
+HIDAPI_VER="0.13.1-1"
+LIBUSB_VER="1.0.26-1"
+LIBUDEV_VER="252.22-1~deb12u1"
+LIBC_VER="2.36-9+rpt2+deb12u4"
+OPENSSL_VER="3.0.11-1~deb12u2+rpt1"
 DEPS=( \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/h/hidapi/libhidapi-libusb0_${HIDAPI_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/h/hidapi/libhidapi-dev_${HIDAPI_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/libu/libusb-1.0/libusb-1.0-0_${LIBUSB_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/libu/libusb-1.0/libusb-1.0-0-dev_${LIBUSB_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/s/systemd/libudev1_${LIBUDEV_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/s/systemd/libudev-dev_${LIBUDEV_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/g/glibc/libc6_${LIBC_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/o/openssl/libssl1.1_${OPENSSL_VER}_armhf.deb" \
-  "http://mirrordirector.raspbian.org/raspbian/pool/main/o/openssl/libssl-dev_${OPENSSL_VER}_armhf.deb"
+  "https://ftp.debian.org/debian/pool/main/h/hidapi/libhidapi-libusb0_${HIDAPI_VER}_armhf.deb" \
+  "https://ftp.debian.org/debian/pool/main/h/hidapi/libhidapi-dev_${HIDAPI_VER}_armhf.deb" \
+  "https://ftp.debian.org/debian/pool/main/libu/libusb-1.0/libusb-1.0-0_${LIBUSB_VER}_armhf.deb" \
+  "https://ftp.debian.org/debian/pool/main/libu/libusb-1.0/libusb-1.0-0-dev_${LIBUSB_VER}_armhf.deb" \
+  "https://ftp.debian.org/debian/pool/main/s/systemd/libudev1_${LIBUDEV_VER}_armhf.deb" \
+  "https://ftp.debian.org/debian/pool/main/s/systemd/libudev-dev_${LIBUDEV_VER}_armhf.deb" \
+  "https://archive.raspberrypi.com/debian/pool/main/g/glibc/libc6_${LIBC_VER}_armhf.deb" \
+  "https://archive.raspberrypi.com/debian/pool/main/o/openssl/libssl3_${OPENSSL_VER}_armhf.deb" \
+  "https://archive.raspberrypi.com/debian/pool/main/o/openssl/libssl-dev_${OPENSSL_VER}_armhf.deb"
 )
 
 # Collect Paths
@@ -68,8 +68,10 @@ export CARGO_TARGET_arm_unknown_linux_gnueabihf_LINKER="gcc-sysroot"
 export CFLAGS="-std=c99"
 
 # Overwrite libc and libpthread with the new ones since the sysroot ones are outdated
-cp $SYSROOT/lib/arm-linux-gnueabihf/libc-2.28.so $SYSROOT/lib/libc.so.6
-cp $SYSROOT/lib/arm-linux-gnueabihf/libpthread-2.28.so $SYSROOT/lib/libpthread.so.0
+cp $SYSROOT/lib/arm-linux-gnueabihf/libc.so.6 $SYSROOT/lib/libc.so.6
+cp $SYSROOT/lib/arm-linux-gnueabihf/libpthread.so.0 $SYSROOT/lib/libpthread.so.0
+cp $SYSROOT/lib/arm-linux-gnueabihf/librt.so.1 $SYSROOT/lib/librt.so.1
+cp $SYSROOT/lib/arm-linux-gnueabihf/libdl.so.2 $SYSROOT/lib/libdl.so.2
 
 CMD=$1
 shift

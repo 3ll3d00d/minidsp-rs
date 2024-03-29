@@ -2,19 +2,15 @@ name: Release build
 
 on:
   push:
-    branches:
-      - 'fix/flex-config-apply'
     tags:
-      - 'v0.*'
-      - 'v1.*'
-      - 'v2.*'
+      - '*'
 env:
   CARGO_TERM_COLOR: always
 jobs:
   build_rpi:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v4
       - name: Setup cross environment
         run: docker build -t rpirust -f scripts/Dockerfile.rpi scripts/
       - name: Run build
@@ -23,7 +19,7 @@ jobs:
         run: |
           cp -v target/arm-unknown-linux-gnueabihf/debian/${{ matrix.pair.bin }}* .
       - name: Upload debian package
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         with:
           name: arm-linux-gnueabihf-rpi-deb-artifact
           path: minidsp*.deb
@@ -35,14 +31,14 @@ jobs:
           cd archive/
           tar -czf ../minidsp.arm-linux-gnueabihf-rpi.tar.gz *
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         with:
           name: arm-linux-gnueabihf-rpi-artifact
           path: minidsp.arm-linux-gnueabihf-rpi.tar.gz
           if-no-files-found: error
   build_all:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         pair:
           - target: x86_64-unknown-linux-gnu
@@ -59,25 +55,13 @@ jobs:
             cross_image: local/aarch64-unknown-linux-gnu-0.2.1
             cross_dockerfile: Dockerfile.aarch64
             archive: tar.gz
-          - target: x86_64-apple-darwin
-            os: macOS-latest
-            bin: minidsp
-            svc_bin: minidspd
-            cross: false
-            archive: tar.gz
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-            bin: minidsp.exe
-            svc_bin: minidspd.exe
-            cross: false
-            archive: zip
 
     runs-on: ${{ matrix.pair.os }}
     env:
-      CARGO_DEB_VER: 1.35.0
+      CARGO_DEB_VER: 2.1.0
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v4
 
       - uses: actions-rs/toolchain@v1
         with:
@@ -100,7 +84,7 @@ jobs:
       - name: Cache Cargo Deb binary
         if: runner.os == 'Linux'
         id: cache-cargo-deb
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/cargo-deb
           key: ${{ matrix.pair.target }}-cargo-deb-${{ env.CARGO_DEB_VER }}
@@ -125,7 +109,7 @@ jobs:
 
       - name: Upload debian package
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.pair.target }}-deb
           path: minidsp*.deb
@@ -150,7 +134,7 @@ jobs:
           compress-archive -Path *.exe -DestinationPath ../minidsp.${{ matrix.pair.target }}.zip
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2.2.1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.pair.target }}-artifact
           path: minidsp.${{ matrix.pair.target }}.${{ matrix.pair.archive }}
@@ -158,12 +142,12 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [build_all, build_rpi]
+    needs: [build_all]
     steps:
-      - uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v4
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
 
